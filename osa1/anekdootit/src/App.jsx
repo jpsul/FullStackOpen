@@ -1,5 +1,23 @@
 import { useState } from 'react'
 
+const Header = ({text}) => (<h2>{text}</h2>)
+
+const BestAnecdote = ({anecdotes, points}) => {
+  let max_points = Math.max(...points)
+
+  const findBest = () => {
+    return anecdotes[points.indexOf(max_points)]
+    
+  }
+
+  return (
+    <div>
+      {findBest()}<br/>
+      has {max_points} votes
+    </div>
+  )
+}
+
 const App = () => {
   const anecdotes = [
     'If it hurts, do it more often.',
@@ -12,19 +30,37 @@ const App = () => {
     'The only way to go fast, is to go well.'
   ]
 
+  const anec_length = anecdotes.length
+
   const [selected, setSelected] = useState(0)
+  const [points, setPoints] = useState(Array(anec_length).fill(0))
 
   const changeAnecdote = () => {
     let rand_num = Math.floor(Math.random() * anecdotes.length)
     setSelected(rand_num)
   }
+  const vote = () => {
+    let new_points = points.map((value, index) => {
+      if (index === selected) {
+        return value + 1
+      } else {
+        return value
+      }
+    })
+    setPoints(new_points)
+  }
 
   return (
     <div>
-      {anecdotes[selected]}
+      <Header text="Anecdote of the day"/>
+      {anecdotes[selected]}<br/>
+      has {points[selected]} votes
       <p>
+        <button onClick={vote}>vote</button>
         <button onClick={changeAnecdote}>next anecdote</button>
       </p>
+      <Header text="Anecdote with most votes"/>
+      {Math.max(...points) > 0 ? <BestAnecdote anecdotes={anecdotes} points={points}/> : "No votes given yet"}
     </div>
   )
 }
